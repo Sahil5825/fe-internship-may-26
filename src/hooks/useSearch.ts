@@ -1,9 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
-import { searchItems } from '../services/mockApi'
 import type { Item } from '../types'
-
-// Uncomment this import when you are ready to wire up the search logic:
-// import { searchItems } from '../services/mockApi'
+import { searchItems } from '../services/mockApi'
 
 export interface UseSearchReturn {
   query: string
@@ -19,55 +16,65 @@ export function useSearch(): UseSearchReturn {
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
- const requestIdRef = useRef(0)
-const mountedRef = useRef(true)
+  // Prevent stale responses
+  const requestIdRef = useRef(0)
 
-useEffect(() => {
-  return () => {
-    mountedRef.current = false
-  }
-}, [])
+  // Prevent state updates after unmount
+  const mountedRef = useRef(true)
 
-useEffect(() => {
-  const currentRequestId = ++requestIdRef.current
-
-  const timer = setTimeout(async () => {
-    try {
-      setIsLoading(true)
-      setError(null)
-
-      const data = await searchItems(query)
-
-      if (
-        !mountedRef.current ||
-        currentRequestId !== requestIdRef.current
-      ) {
-        return
-      }
-
-      setResults(data)
-    } catch (err) {
-      if (
-        !mountedRef.current ||
-        currentRequestId !== requestIdRef.current
-      ) {
-        return
-      }
-
-      setError('Failed to search items')
-      setResults([])
-    } finally {
-      if (
-        mountedRef.current &&
-        currentRequestId === requestIdRef.current
-      ) {
-        setIsLoading(false)
-      }
+  useEffect(() => {
+    return () => {
+      mountedRef.current = false
     }
-  }, 300)
+  }, [])
 
-  return () => clearTimeout(timer)
-}, [query])
+  useEffect(() => {
+    const currentRequestId = ++requestIdRef.current
 
-  return { query, setQuery, results, isLoading, error }
+    const timer = setTimeout(async () => {
+      try {
+        setIsLoading(true)
+        setError(null)
+
+        const data = await searchItems(query)
+
+        // Ignore stale responses
+        if (
+          !mountedRef.current ||
+          currentRequestId !== requestIdRef.current
+        ) {
+          return
+        }
+
+        setResults(data)
+      } catch {
+        if (
+          !mountedRef.current ||
+          currentRequestId !== requestIdRef.current
+        ) {
+          return
+        }
+
+        setError('Failed to search items')
+        setResults([])
+      } finally {
+        if (
+          mountedRef.current &&
+          currentRequestId === requestIdRef.current
+        ) {
+          setIsLoading(false)
+        }
+      }
+    }, 300)
+
+    return () => clearTimeout(timer)
+  }, [query])
+
+  return {
+    query,
+    setQuery,
+    results,
+    isLoading,
+    error,
+  }
 }
