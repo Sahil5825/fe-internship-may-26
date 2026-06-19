@@ -11,8 +11,12 @@ export default function App() {
     <div className="min-h-screen bg-gray-950 text-white">
       <div className="max-w-2xl mx-auto px-4 py-10">
         <div className="mb-8">
-          <h1 className="text-2xl font-bold text-white mb-1">Frontend Tools</h1>
-          <p className="text-gray-400 text-sm">Search across popular frameworks, libraries and tooling</p>
+          <h1 className="text-2xl font-bold text-white mb-1">
+            Frontend Tools
+          </h1>
+          <p className="text-gray-400 text-sm">
+            Search across popular frameworks, libraries and tooling
+          </p>
         </div>
 
         <div className="mb-6">
@@ -23,7 +27,9 @@ export default function App() {
           />
           <p className="mt-2 text-xs text-gray-600">
             Press{' '}
-            <kbd className="px-1 py-0.5 bg-gray-800 rounded text-gray-400 font-mono text-xs">/</kbd>
+            <kbd className="px-1 py-0.5 bg-gray-800 rounded text-gray-400 font-mono text-xs">
+              /
+            </kbd>
             {' '}to focus
           </p>
         </div>
@@ -34,13 +40,13 @@ export default function App() {
           </div>
         )}
 
-       {isLoading ? (
-  <LoadingState />
-) : results.length > 0 ? (
-  <ItemList items={results} />
-) : (
-  <EmptyState query={query} />
-)}>
+        {isLoading ? (
+          <LoadingState />
+        ) : results.length > 0 ? (
+          <ItemList items={results} />
+        ) : (
+          <EmptyState query={query} />
+        )}
       </div>
     </div>
   )
